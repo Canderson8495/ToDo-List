@@ -1,0 +1,26 @@
+# depslib dependency file v1.0
+1496087922 source:d:\code\todo list\main.cpp
+	<iostream>
+	"Database.h"
+
+1496871728 d:\code\todo list\include\database.h
+	<iostream>
+	<string>
+	<cstdlib>
+	<vector>
+	<algorithm>
+	"Game.h"
+
+1496871794 source:d:\code\todo list\src\database.cpp
+	"Database.h"
+
+1496006561 source:d:\code\todo list\src\game.cpp
+	"Game.h"
+
+1496871839 d:\code\todo list\include\game.h
+	<iostream>
+
+1496173393 d:\code\todo list\include\platform.h
+	<iostream>
+	<string>
+
