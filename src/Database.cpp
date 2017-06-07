@@ -82,9 +82,6 @@ void Database::addEntry()
         games.push_back(tmp);
         cout << "You have created a new game entry with the game " << tmp.getName() << " thats run on the console " << tmp.getConsole() << endl;
         break;
-    case 1:
-        cout << "You have chosen to add a new book" << endl;
-        break;
     }
 }
 
@@ -168,7 +165,7 @@ void Database::searchEntry()
         //Special weighting technique that gives a slight similarity deduction if the search query and the entry have differing sizes. COULD BE IMPLEMENTED LATER
         //THIS WILL CAUSE THE PROGRAM TO FAVOR THINGS OF CLOSER LENGTH TO THE ACTUAL SEARCH QUERY
 
-        tmpRatio = (((float)charactersAlike/stringAnswer.size())*(((float)stringAnswer.size()/tmp2.size())+1)/2);
+        tmpRatio = (((float)charactersAlike/stringAnswer.size())*(((float)charactersAlike/tmp2.size())+1)/2);
         if(tmpRatio > 0){
             searchResults.push_back(games.at(x));
             ratioAlike.push_back(tmpRatio);
