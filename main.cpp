@@ -43,6 +43,7 @@ int main()
     **/
     cout << "Would you like to make any changes to your database" << endl << endl;
     cout << "Supported functions:" << endl;
+    cout << "P: ADD PLATFORM" << endl;
     cout << "A: ADD ENTRY" << endl;
     cout << "S: DELETE ENTRY" << endl;
     cout << "D: SEARCH ENTRY" << endl;
@@ -62,6 +63,9 @@ int main()
         tmp.searchEntry();
         break;
     case 'Q':
+        break;
+    case 'P':
+        tmp.addPlatform();
         break;
     }
     }

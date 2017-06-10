@@ -1,5 +1,7 @@
 #include "Database.h"
 
+//Clean up the displayData piece next, then work into addEntry then finally search then delete.
+
 Database::Database()
 {
     //ctor
@@ -16,10 +18,15 @@ void Database::displayData()
     for(int x = 0; x < games.size(); x++){
         cout << games.at(x).getName() << "     " << games.at(x).getConsole() << endl;
     }
+    cout << "BOOKS" << endl;
+    cout << "Name" << "     " << "Total Pages" << endl;
+    for(int x = 0; x < books.size(); x++){
+        cout << books.at(x).getName() << "     " << books.at(x).getPage() << endl;
+    }
 }
 
 
-/*
+
 void Database::addPlatform()
 {
     system("cls");
@@ -37,20 +44,30 @@ void Database::addPlatform()
         transform(stringAnswer.begin(), stringAnswer.end(), stringAnswer.begin(), ::toupper);
         vector<Platform*> tmpPlatform;
         if(stringAnswer == "GAMES"){
-            cout << "You have decided to add a game" << endl;
-            database.push_back(&tmpPlatform);
+            cout << "You have decided to add a game platform" << endl;
+            database.push_back(tmpPlatform);
             auto it = find(possibleCategories.begin(), possibleCategories.end(), "Games");
             if(it != possibleCategories.end()){
-                v.erase(it);
+                possibleCategories.erase(it);
+                categoriesInUse.push_back("Games");
             }else{
                 cout << "ERRRROROROROROROR" << endl;
             }
-            categoriesInUse.push_back("Games");
+        }else if(stringAnswer == "BOOKS"){
+            cout << "You have decided to add a book platform" << endl;
+            database.push_back(tmpPlatform);
+            auto it = find(possibleCategories.begin(), possibleCategories.end(), "Books");
+            if(it!=possibleCategories.end()){
+                possibleCategories.erase(it);
+                categoriesInUse.push_back("Books");
+            }else{
+                cout << "ERROROROROROROR" << endl;
+            }
         }
     }
 }
 
-*/
+
 
 /**
 

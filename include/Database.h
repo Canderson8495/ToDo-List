@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include "Game.h"
+#include "Book.h"
 using namespace std;
 /**
     It's important to understand the terminology.
@@ -29,6 +30,11 @@ class Database
     private:
         vector<string> categories = {"Games"};
         vector<Game> games;
+        vector<Book> books;
+        vector<Platform*> platforms;
+        vector<vector<Platform*>> database;
+        vector<string> possibleCategories = {"Books", "Games"};
+        vector<string> categoriesInUse;
 };
 
 #endif // DATABASE_H

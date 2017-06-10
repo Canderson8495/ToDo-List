@@ -4,27 +4,35 @@ Game::Game()
 {
     //ctor
 }
-
-void Game::setName(string tmpName)
+Game::Game(vector<string> tmp)
 {
-    this->name = tmpName;
+    this->name = tmp.at(0);
+    this->console = tmp.at(1);
 }
-
-void Game::setConsole(string tmpConsole)
+void Game::setName(string name)
 {
-    this->console = tmpConsole;
+    this->name = name;
 }
+void Game::setConsole(string console){
+    this->console = console;
+}
+string Game::getConsole()
+{
 
+    return this->console;
+}
 string Game::getName()
 {
     return this->name;
 }
+vector<string> Game::printData(){
 
-string Game::getConsole()
-{
-    return this->console;
+    vector<string> tmp;
+    tmp.push_back(this->name);
+    tmp.push_back(this->console);
+    return tmp;
+
 }
-
 Game::~Game()
 {
     //dtor
