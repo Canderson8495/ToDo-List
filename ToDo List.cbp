@@ -37,10 +37,12 @@
 		<Unit filename="include/Book.h" />
 		<Unit filename="include/Database.h" />
 		<Unit filename="include/Game.h" />
+		<Unit filename="include/Platform.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/Book.cpp" />
 		<Unit filename="src/Database.cpp" />
 		<Unit filename="src/Game.cpp" />
+		<Unit filename="src/Platform.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

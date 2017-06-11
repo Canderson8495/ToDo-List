@@ -13,15 +13,24 @@ void Database::displayData()
     Unfortunatly, i've decided to hard code the display data after numerous failed attempts at other things, that is a bummer, but we'll explore more difficult options towards the release of the code.
     **/
     //GAME DISPLAY
-    cout << "GAMES" << endl;
-    cout << "Name" << "     " << "Console" << endl;
-    for(int x = 0; x < games.size(); x++){
-        cout << games.at(x).getName() << "     " << games.at(x).getConsole() << endl;
-    }
-    cout << "BOOKS" << endl;
-    cout << "Name" << "     " << "Total Pages" << endl;
-    for(int x = 0; x < books.size(); x++){
-        cout << books.at(x).getName() << "     " << books.at(x).getPage() << endl;
+    vector<string> tmp;
+    for(int x = 0; x < database.size(); x++){
+        if(categoriesInUse.at(x)== "Games"){
+            cout << "GAMES" << endl;
+            cout << "Name" << "       Console" << endl;
+        }else if(categoriesInUse.at(x) == "Books"){
+            cout << "BOOKS" << endl;
+            cout << "Name" << "       Total Pages" << endl;
+        }
+        platforms = database.at(x);
+        cout << "PLATFORMS IS LOADED WITH THE PLATFORM " << endl;
+        for(int c = 0; c < platforms.size(); c++){
+            tmp = platforms.at(c)->printData();
+            for(int j = 0; j < tmp.size(); j++){
+                cout << tmp.at(j) << "    ";
+            }
+            cout << endl;
+        }
     }
 }
 
@@ -79,13 +88,12 @@ void Database::addEntry()
     system("cls");
     cout << "You are adding a entry" << endl;
     cout << "What category will your entry be in?" << endl;
-    for(int x = 0; x < categories.size(); x++){
-        cout << x << ": " << categories.at(x) << endl;
+    for(int x = 0; x < categoriesInUse.size(); x++){
+        cout << x << ": " << categoriesInUse.at(x) << endl;
     }
     int intAnswer;
     cin >> intAnswer;
-    switch(intAnswer){
-    case 0:
+    if(categoriesInUse.at(intAnswer)== "Games"){
         cout << "You have chosen to add a new game" << endl;
         Game tmp;
         cout << "What is the name of the game?" << endl;
@@ -98,7 +106,35 @@ void Database::addEntry()
         tmp.setConsole(stringAnswer);
         games.push_back(tmp);
         cout << "You have created a new game entry with the game " << tmp.getName() << " thats run on the console " << tmp.getConsole() << endl;
-        break;
+        platforms.clear();
+        for(int x = 0; x < games.size(); x++){
+            platforms.push_back(&games.at(x));
+        }
+        cout << "Platforms is now size " << platforms.size() << endl;
+        database.at(intAnswer) = platforms;
+        cout << "database loaded is now " << database.at(intAnswer).size() << endl;
+        platforms.clear();
+
+    }else if(categoriesInUse.at(intAnswer) == "Books"){
+        cout << "You have chosen to add a new book" << endl;
+        Book tmp;
+        cout << "What is the name of the book?" << endl;
+        string stringAnswer;
+        cin.ignore();
+        getline(cin , stringAnswer);
+        tmp.setName(stringAnswer);
+        cout << "What is the total page number of the book" << endl;
+        int tmpInt;
+        cin >> tmpInt;
+        tmp.setPage(tmpInt);
+        books.push_back(tmp);
+        cout << "You have created a new game entry with the name " << tmp.getName() << " thats has this many pages: " << tmp.getPage() << endl;
+        platforms.clear();
+        for(int x = 0; x < books.size(); x++){
+            platforms.push_back(&books.at(x));
+        }
+        database.at(intAnswer) = platforms;
+        platforms.clear();
     }
 }
 
