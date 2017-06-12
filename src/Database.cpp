@@ -1,6 +1,5 @@
 #include "Database.h"
 
-//Clean up the displayData piece next, then work into addEntry then finally search then delete.
 
 Database::Database()
 {
@@ -9,9 +8,6 @@ Database::Database()
 
 void Database::displayData()
 {
-    /**
-    Unfortunatly, i've decided to hard code the display data after numerous failed attempts at other things, that is a bummer, but we'll explore more difficult options towards the release of the code.
-    **/
     //GAME DISPLAY
     vector<string> tmp;
     for(int x = 0; x < database.size(); x++){
@@ -78,11 +74,7 @@ void Database::addPlatform()
 
 
 
-/**
 
-I NEED TO GET BACK TO FIXING addEntry() AND searchEntry(), BECAUSE I WANT TO ADD A addPlatform() FUNCTION.
-
-**/
 void Database::addEntry()
 {
     system("cls");
