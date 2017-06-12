@@ -19,7 +19,6 @@ void Database::displayData()
             cout << "Name" << "       Total Pages" << endl;
         }
         platforms = database.at(x);
-        cout << "PLATFORMS IS LOADED WITH THE PLATFORM " << endl;
         for(int c = 0; c < platforms.size(); c++){
             tmp = platforms.at(c)->printData();
             for(int j = 0; j < tmp.size(); j++){
@@ -150,7 +149,7 @@ void Database::searchEntry()
     getline(cin, stringAnswer);
     string tmp = "";
     vector<string> wordsInSearchQuery;
-    vector<Game> searchResults;
+    vector<vector<Platform*>> searchResults;
     transform(stringAnswer.begin(), stringAnswer.end(), stringAnswer.begin(), ::toupper);
     //tmp2 is a replacement for games.at(x).getName(). I was getting a fpermissive error because i had it going to games.at(x).getName().at(n)
     for(int t = 0; t < stringAnswer.size(); t++){
@@ -169,56 +168,65 @@ void Database::searchEntry()
     tmp = "";
     cout << "There were " << wordsInSearchQuery.size() << " words inside of " << stringAnswer << endl << endl;
 
-    vector<float> ratioAlike;
-    string tmp2;
+    vector<vector<float>> ratioAlike;
+    vector<float> tmpfloat;
+    vector<string> tmp2;
     vector <string> tmpWordsInQuery;
     /**
     OH GOD THE HUMANITY
     **/
-    for(int x = 0; x < games.size(); x++){
-        tmp2 = games.at(x).getName();
-        transform(tmp2.begin(), tmp2.end(), tmp2.begin(), ::toupper);
-        for(int n = 0; n < tmp2.size(); n++){
-            if(tmp2.at(n) != ' '){
-                if(tmp.size()== 0){
-                    tmp = tmp2.at(n);
+    for(int j = 0; j < database.size(); j++){
+        platforms.clear();
+        tmp.clear();
+        searchResults.push_back(platforms);
+        ratioAlike.push_back(tmpfloat);
+        platforms = database.at(j);
+        for(int x = 0; x < platforms.size(); x++){
+            tmp2 = platforms.at(x)->printData();
+            transform(tmp2.at(0).begin(), tmp2.at(0).end(), tmp2.at(0).begin(), ::toupper);
+            for(int n = 0; n < tmp2.at(0).size(); n++){
+                if(tmp2.at(0).at(n) != ' '){
+                    if(tmp.size()== 0){
+                        tmp = tmp2.at(0).at(n);
+                    }else{
+                        tmp += tmp2.at(0).at(n);
+                    }
                 }else{
-                    tmp += tmp2.at(n);
-                }
-            }else{
-                tmpWordsInQuery.push_back(tmp);
-                tmp = "";
-            }
-        }
-        tmpWordsInQuery.push_back(tmp);
-        tmp = "";
-        cout << "There are " << tmpWordsInQuery.size() << " words inside of " << tmp2 << endl;
-
-        //Here is where we look for similarities with the result words and the search words
-        int charactersAlike = 0;
-        cout << "Searching for matches against SearchQuery: " << stringAnswer << endl;
-        for(int g = 0; g < wordsInSearchQuery.size(); g++){
-            for(int o = 0; o < tmpWordsInQuery.size(); o++){
-                if(wordsInSearchQuery.at(g).compare(tmpWordsInQuery.at(o))==0){
-                    charactersAlike+=wordsInSearchQuery.at(g).size();
-                    break;
+                    tmpWordsInQuery.push_back(tmp);
+                    tmp = "";
                 }
             }
-        }
-        cout << "There were " << charactersAlike << " characters alike between " << stringAnswer << " and " << tmp2 << endl << endl;
-        cout << endl;
-        //Special weighting technique that gives a slight similarity deduction if the search query and the entry have differing sizes. COULD BE IMPLEMENTED LATER
-        //THIS WILL CAUSE THE PROGRAM TO FAVOR THINGS OF CLOSER LENGTH TO THE ACTUAL SEARCH QUERY
+            tmpWordsInQuery.push_back(tmp);
+            tmp = "";
+            cout << "There are " << tmpWordsInQuery.size() << " words inside of " << tmp2.at(0) << endl;
 
-        tmpRatio = (((float)charactersAlike/stringAnswer.size())*(((float)charactersAlike/tmp2.size())+1)/2);
-        if(tmpRatio > 0){
-            searchResults.push_back(games.at(x));
-            ratioAlike.push_back(tmpRatio);
-        }
-        cout << tmpRatio << endl;
+            //Here is where we look for similarities with the result words and the search words
+            int charactersAlike = 0;
+            cout << "Searching for matches against SearchQuery: " << stringAnswer << endl;
+            for(int g = 0; g < wordsInSearchQuery.size(); g++){
+                for(int o = 0; o < tmpWordsInQuery.size(); o++){
+                    if(wordsInSearchQuery.at(g).compare(tmpWordsInQuery.at(o))==0){
+                        charactersAlike+=wordsInSearchQuery.at(g).size();
+                        break;
+                    }
+                }
+            }
+            cout << "There were " << charactersAlike << " characters alike between " << stringAnswer << " and " << tmp2.at(0) << endl << endl;
+            cout << endl;
+            //Special weighting technique that gives a slight similarity deduction if the search query and the entry have differing sizes. COULD BE IMPLEMENTED LATER
+            //THIS WILL CAUSE THE PROGRAM TO FAVOR THINGS OF CLOSER LENGTH TO THE ACTUAL SEARCH QUERY
 
-        tmpWordsInQuery.clear();
-        cout << "We now have a ratio of alikeness, we need to organize our results by the highest ratio alike" << endl;
+            tmpRatio = (((float)charactersAlike/stringAnswer.size())*(((float)charactersAlike/tmp2.at(0).size())+1)/2);
+            //RIGHT HERE I NEED TO FIGURE EFFECTIVELY PUSH BACK THE PLATFORM PIECES, THIS PIECE WOULD HAVE ME PUSH BACK CERTAIN OTHER PIECES.
+            if(tmpRatio > 0){
+                searchResults.at(j).push_back(platforms.at(x));
+                ratioAlike.at(j).push_back(tmpRatio);
+            }
+            cout << tmpRatio << endl;
+
+            tmpWordsInQuery.clear();
+            cout << "We now have a ratio of alikeness, we need to organize our results by the highest ratio alike" << endl;
+        }
     }
     /*
     Here I will load my ratios and respective strings, which will later be replaced by a specific platform in the real program.
@@ -226,25 +234,50 @@ void Database::searchEntry()
     //Insertion based algorithm
     int j;
     float temp;
-    Game tmpGame;
-    //Right here, I don't want to change the order of the actual database, so I guess I have to make an entire copy of the database to be used... ORRRRRRRRRR All the datapieces that showed up as a result.
-    for (int i = 0; i < ratioAlike.size(); i++){
-        j = i;
-        while (j > 0 && ratioAlike.at(j) < ratioAlike.at(j-1)){
-            temp = ratioAlike.at(j);
-            tmpGame = searchResults.at(j);
-            ratioAlike.at(j) = ratioAlike.at(j-1);
-            searchResults.at(j) = searchResults.at(j-1);
-            ratioAlike.at(j-1) = temp;
-            searchResults.at(j-1) = tmpGame;
-            j--;
+    Platform* tmpPlatform;
+    //I have to make a new nested organization algorithm.
+    for(int t = 0; t < ratioAlike.size(); t++){
+        platforms = searchResults.at(t);
+        tmpfloat = ratioAlike.at(t);
+        for (int i = 0; i < tmpfloat.size(); i++){
+            j = i;
+            tmp2 = platforms.at(i)->printData();
+            cout << tmp2.at(0) << " " << tmpfloat.at(i) << endl;
+            while (j > 0 && tmpfloat.at(j) < tmpfloat.at(j-1)){
+                //This is a test to see if it works.
+                temp = tmpfloat.at(j);
+                tmpPlatform = platforms.at(j);
+                tmpfloat.at(j) = tmpfloat.at(j-1);
+                platforms.at(j) = platforms.at(j-1);
+                tmpfloat.at(j-1) = temp;
+                platforms.at(j-1) = tmpPlatform;
+                j--;
+            }
+            ratioAlike.at(t) = tmpfloat;
+            searchResults.at(t) = platforms;
         }
     }
-    system("cls");
-    cout << "GAMES" << endl;
-    cout << "NAME" << endl;
-    for(int x = ratioAlike.size()-1; x >= 0; x--){
-        cout << searchResults.at(x).getName() << endl;
+    for(int x = 0; x < searchResults.size(); x++){
+        if(categoriesInUse.at(x)== "Games"){
+            cout << "GAMES" << endl;
+            cout << "Name" << "       Console" << endl;
+        }else if(categoriesInUse.at(x) == "Books"){
+            cout << "BOOKS" << endl;
+            cout << "Name" << "       Total Pages" << endl;
+        }
+        platforms = searchResults.at(x);
+        if(platforms.size()==0){
+            cout <<"NO DATA FOUND" << endl;
+        }else{
+            for(int c = platforms.size()-1 ; c >= 0; c--){
+                tmp2 = platforms.at(c)->printData();
+                for(int j = 0; j < tmp2.size(); j++){
+                    cout << tmp2.at(j) << "    ";
+                }
+                cout << endl;
+            }
+        }
+        cout << endl << endl;
     }
 }
 
