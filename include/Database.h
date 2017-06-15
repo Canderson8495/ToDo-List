@@ -19,15 +19,19 @@ class Database
 {
     public:
         Database();
-        void displayData();
+        vector<vector<Platform*>> getDatabase();
+        void setDatabase(vector<vector<Platform*>> tmp);
+        vector<string> getCategoriesInUse();
+        void setCategoriesInUse(vector<string> tmp);
         void addEntry();
-        void deleteEntry();
-        void searchEntry();
+        void deleteEntry(int index, vector<vector<Platform*>>);
+        vector<vector<Platform*>> searchEntry(string tmp);
         void addPlatform();
         virtual ~Database();
     protected:
 
     private:
+        //void chooseData(vector<vector<*Platform>> tmpDatabase);
         vector<string> categories = {"Games"};
         vector<Game> games;
         vector<Book> books;

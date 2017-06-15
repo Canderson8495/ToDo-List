@@ -6,11 +6,25 @@ Database::Database()
     //ctor
 }
 
-void Database::displayData()
-{
-    //GAME DISPLAY
-    vector<string> tmp;
-    for(int x = 0; x < database.size(); x++){
+vector<vector<Platform*>> Database::getDatabase(){
+
+    return this->database;
+
+}
+
+void Database::setDatabase(vector<vector<Platform*>> tmp){
+    this->database = tmp;
+}
+vector<string> Database::getCategoriesInUse(){
+    return this->categoriesInUse;
+}
+
+void Database::setCategoriesInUse(vector<string> tmp){
+    this->categoriesInUse= tmp;
+}
+/*
+void Database::chooseData(vector<vector<*Platform>> tmpDatabase){
+    for(int x = 0; x < tmpDatabase.size(); x++){
         if(categoriesInUse.at(x)== "Games"){
             cout << "GAMES" << endl;
             cout << "Name" << "       Console" << endl;
@@ -18,18 +32,23 @@ void Database::displayData()
             cout << "BOOKS" << endl;
             cout << "Name" << "       Total Pages" << endl;
         }
-        platforms = database.at(x);
-        for(int c = 0; c < platforms.size(); c++){
-            tmp = platforms.at(c)->printData();
-            for(int j = 0; j < tmp.size(); j++){
-                cout << tmp.at(j) << "    ";
+        platforms = tmpDatabase.at(x);
+        if(platforms.size()==0){
+            cout <<"NO DATA FOUND" << endl;
+        }else{
+            for(int c = platforms.size()-1 ; c >= 0; c--){
+                tmp2 = platforms.at(c)->printData();
+                for(int j = 0; j < tmp2.size(); j++){
+                    cout << tmp2.at(j) << "    ";
+                }
+                cout << endl;
             }
-            cout << endl;
         }
+        cout << endl << endl;
     }
 }
 
-
+*/
 
 void Database::addPlatform()
 {
@@ -129,24 +148,90 @@ void Database::addEntry()
     }
 }
 
-void Database::deleteEntry()
+void Database::deleteEntry(int index, vector<vector<Platform*>> tmp)
 {
-    cout << "You are deleting a entry" << endl;
+    //lets say index =2
+    vector<string> tmpEntryData;
+    vector<string> comparingData;
+    int category = 0;
+    bool found = false;
+    while(category<tmp.size()&&found == false){
+        platforms = tmp.at(category);
+        cout << "PLATFORM LOADED INTO CATEGORY " << category << endl;
+        for(int c = 0; c < platforms.size(); c++){
+            if(index != 1){
+                index--;
+            }else{
+                tmpEntryData = platforms.at(c)->printData();
+                cout << "DISPLAYING USER'S REQUESTED DELETE" << endl;
+                for(int g = 0; g < tmpEntryData.size(); g++){
+                    cout << tmpEntryData.at(g) << "    ";
+                }
+                found = true;
+                break;
+                cout << endl;
+            }
+        }
+        cout << "It was not found in category " << category << endl;
+        category++;
+        cout << category << endl;
+    }
+    //Now we should have the platform of the item that the user wants to delete and the data of the entry.
+    //We compare the entry to everything inside of the platform that sits in the main database.
+    //Optimization: Alphabetical order will allow for increased speed when comparing.
+    category--;
+    int thingsAlike = 0;
+    platforms=this->database.at(category);
+    for(int x = 0; x < platforms.size(); x++){
+        comparingData = platforms.at(x)->printData();
+        cout << comparingData.at(0);
+    }
+    bool deleted = false;
+    for(int x = 0; x < platforms.size(); x++){
+        comparingData = platforms.at(x)->printData();
+        for(int c = 0 ; c < comparingData.size(); c++){
+            if(comparingData.at(c) == tmpEntryData.at(c)){
+                thingsAlike++;
+            }else{
+                break;
+            }
+            if(thingsAlike==comparingData.size()){
+                cout << "MATCH IS FOUND" << endl;
+                cout << "DELETING" << comparingData.at(0) << endl;
+                if(categoriesInUse.at(category)== "Books"){
+                    books.erase(books.begin()+x);
+                    platforms.clear();
+                    deleted = true;
+                    for(int t = 0; t < books.size(); t++){
+                        platforms.push_back(&books.at(t));
+                    }
+                }else if(categoriesInUse.at(category) == "Games"){
+                    games.erase(games.begin()+x);
+                    platforms.clear();
+                    deleted = true;
+                    for(int t = 0; t < games.size(); t++){
+                        platforms.push_back(&games.at(t));
+                    }
+                }
+            }
+        }
+        if(deleted == true){
+            break;
+        }
+    }
+    this->database.at(category) = platforms;
 }
 
-void Database::searchEntry()
+vector<vector<Platform*>> Database::searchEntry(string tmpAnswer)
 {
     //ADD MULTIPLE DIFFERENT TYPES OF PLATFORMS LIKE BOOKS BY USING SOME EQUIVALENT TO vector<vector<*platforms>> or something of the similar
     /**
     Unfortunatly, this will be an absolute mess, because i'm looking for through hard coded lists, therefore i'll have to loop around for each platform... Games, Books, ETC..
     **/
-    system("cls");
-    cout << "You are searching a entry" << endl;
-    cout << "What is the name of the entry" << endl;
+
     string stringAnswer;
+    stringAnswer = tmpAnswer;
     float tmpRatio;
-    cin.ignore();
-    getline(cin, stringAnswer);
     string tmp = "";
     vector<string> wordsInSearchQuery;
     vector<vector<Platform*>> searchResults;
@@ -257,28 +342,7 @@ void Database::searchEntry()
             searchResults.at(t) = platforms;
         }
     }
-    for(int x = 0; x < searchResults.size(); x++){
-        if(categoriesInUse.at(x)== "Games"){
-            cout << "GAMES" << endl;
-            cout << "Name" << "       Console" << endl;
-        }else if(categoriesInUse.at(x) == "Books"){
-            cout << "BOOKS" << endl;
-            cout << "Name" << "       Total Pages" << endl;
-        }
-        platforms = searchResults.at(x);
-        if(platforms.size()==0){
-            cout <<"NO DATA FOUND" << endl;
-        }else{
-            for(int c = platforms.size()-1 ; c >= 0; c--){
-                tmp2 = platforms.at(c)->printData();
-                for(int j = 0; j < tmp2.size(); j++){
-                    cout << tmp2.at(j) << "    ";
-                }
-                cout << endl;
-            }
-        }
-        cout << endl << endl;
-    }
+    return searchResults;
 }
 
 Database::~Database()

@@ -1,13 +1,20 @@
 #include <iostream>
 #include "Database.h"
 using namespace std;
+
+
+void displayDatabase(Database tmp);
+
 int main()
 {
     cout << "STAGE 1: DATABASE INITIALIZATION" << endl;
     cout << "Welcome to your personal database. You can input TV shows, movies, and much more with the simple click of a button!" << endl;
     cout << "Do you currently have a database?[Y/N]" << endl;
     char answer;
+    string tmpString;
+    int intAnswer;
     cin >> answer;
+    Database mainData;
     Database tmp;
     /**
         THIS WILL EITHER LOAD OR CREATE A NEW DATABASE.
@@ -35,7 +42,7 @@ int main()
         else The database will display only the games section.
         I plan on making a vector<vector<*platforms>> so i can iterate through all the lists with 2 for loops.
     **/
-    tmp.displayData();
+    displayDatabase(mainData);
     cout << "\n\n\nSTAGE 3: DATABASE CHANGES" << endl;
     /**
         DATABASE CHANGES WILL BE CONDUCTED WITH A FEW PREDETERMINED OPTIONS SUCH AS...
@@ -52,22 +59,74 @@ int main()
     switch(toupper(answer)){
     case 'A':
         cout << "ADDING ENTRY" << endl;
-        tmp.addEntry();
+        mainData.addEntry();
         break;
     case 'S':
         cout << "DELETING ENTRY" << endl;
-        tmp.deleteEntry();
+        cout << "You have decided to delete an entry" << endl;
+        cout << "Type in the keyword associated with that entry" << endl;
+        cin >> tmpString;
+        tmp.setDatabase(mainData.searchEntry(tmpString));
+        tmp.setCategoriesInUse(mainData.getCategoriesInUse());
+        displayDatabase(tmp);
+
+        cout << "Which entry would you like to delete[1/2/3/4/....]"<< endl;
+        cin >> intAnswer;
+        /*
+        delete entry will look at the data stored at index #tmp, and
+        it'll compare that to data found in main database, when it finds a
+        complete match, then we'll know which index it really lies at inside of the main database.
+         Then we'll just simply delete from the database and possibly delete from the respective platform vector
+        */
+        mainData.deleteEntry(intAnswer, tmp.getDatabase());
         break;
     case 'D':
         cout << "SEARCHING ENTRY" << endl;
-        tmp.searchEntry();
+        cout << "What keyword would you like to search?" << endl;
+        cin >> tmpString;
+
+        tmp.setDatabase(mainData.searchEntry(tmpString));
+        tmp.setCategoriesInUse(mainData.getCategoriesInUse());
+        displayDatabase(tmp);
         break;
     case 'Q':
         break;
     case 'P':
-        tmp.addPlatform();
+        mainData.addPlatform();
         break;
     }
     }
     return 0;
+}
+
+
+
+void displayDatabase(Database tmp){
+    vector<vector<Platform*>> database = tmp.getDatabase();
+    vector<string> tmpEntryData;
+    vector<Platform*> platforms;
+    vector<string> categoriesInUse = tmp.getCategoriesInUse();
+    int index = 0;
+    for(int x = 0; x < database.size(); x++){
+        if(categoriesInUse.at(x)== "Games"){
+            cout << "GAMES" << endl;
+            cout << "Name" << "       Console" << endl;
+        }else if(categoriesInUse.at(x) == "Books"){
+            cout << "BOOKS" << endl;
+            cout << "Name" << "       Total Pages" << endl;
+        }
+        platforms = database.at(x);
+        if(platforms.size()==0){
+            cout << "NO DATA FOUND FOR " << categoriesInUse.at(x) << endl;
+        }
+        for(int c = 0; c < platforms.size(); c++){
+            index++;
+            cout << index << ": ";
+            tmpEntryData = platforms.at(c)->printData();
+            for(int j = 0; j < tmpEntryData.size(); j++){
+                cout << tmpEntryData.at(j) << "    ";
+            }
+            cout << endl;
+        }
+    }
 }
