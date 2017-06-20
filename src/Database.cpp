@@ -19,6 +19,14 @@ vector<string> Database::getCategoriesInUse(){
     return this->categoriesInUse;
 }
 
+void Database::setPossibleCategories(vector<string> tmp){
+    this->possibleCategories= tmp;
+}
+
+vector<string> Database::getPossibleCategories(){
+    return this->possibleCategories;
+}
+
 void Database::setCategoriesInUse(vector<string> tmp){
     this->categoriesInUse= tmp;
 }
@@ -93,27 +101,16 @@ void Database::addPlatform()
 
 
 
-void Database::addEntry()
+void Database::addEntry(vector<string> entryData)
 {
     system("cls");
-    cout << "You are adding a entry" << endl;
-    cout << "What category will your entry be in?" << endl;
-    for(int x = 0; x < categoriesInUse.size(); x++){
-        cout << x << ": " << categoriesInUse.at(x) << endl;
-    }
+    stringstream ss(entryData.at(0));
     int intAnswer;
-    cin >> intAnswer;
+    ss >> intAnswer;
     if(categoriesInUse.at(intAnswer)== "Games"){
-        cout << "You have chosen to add a new game" << endl;
         Game tmp;
-        cout << "What is the name of the game?" << endl;
-        string stringAnswer;
-        cin.ignore();
-        getline(cin , stringAnswer);
-        tmp.setName(stringAnswer);
-        cout << "What is the console of the game?" << endl;
-        getline(cin,stringAnswer);
-        tmp.setConsole(stringAnswer);
+        tmp.setName(entryData.at(1));
+        tmp.setConsole(entryData.at(2));
         games.push_back(tmp);
         cout << "You have created a new game entry with the game " << tmp.getName() << " thats run on the console " << tmp.getConsole() << endl;
         platforms.clear();
@@ -124,18 +121,12 @@ void Database::addEntry()
         database.at(intAnswer) = platforms;
         cout << "database loaded is now " << database.at(intAnswer).size() << endl;
         platforms.clear();
-
     }else if(categoriesInUse.at(intAnswer) == "Books"){
-        cout << "You have chosen to add a new book" << endl;
         Book tmp;
-        cout << "What is the name of the book?" << endl;
-        string stringAnswer;
-        cin.ignore();
-        getline(cin , stringAnswer);
-        tmp.setName(stringAnswer);
-        cout << "What is the total page number of the book" << endl;
+        tmp.setName(entryData.at(1));
         int tmpInt;
-        cin >> tmpInt;
+        stringstream sss(entryData.at(2));
+        sss >> tmpInt;
         tmp.setPage(tmpInt);
         books.push_back(tmp);
         cout << "You have created a new game entry with the name " << tmp.getName() << " thats has this many pages: " << tmp.getPage() << endl;
@@ -237,6 +228,7 @@ vector<vector<Platform*>> Database::searchEntry(string tmpAnswer)
     vector<vector<Platform*>> searchResults;
     transform(stringAnswer.begin(), stringAnswer.end(), stringAnswer.begin(), ::toupper);
     //tmp2 is a replacement for games.at(x).getName(). I was getting a fpermissive error because i had it going to games.at(x).getName().at(n)
+    //WTF I GOT RID OF THE WHOLE SECTION.
     for(int t = 0; t < stringAnswer.size(); t++){
         if(stringAnswer.at(t)!= ' '){
             if(tmp.size()== 0){
@@ -244,11 +236,12 @@ vector<vector<Platform*>> Database::searchEntry(string tmpAnswer)
             }else{
                 tmp += stringAnswer.at(t);
             }
-        }else{
-            wordsInSearchQuery.push_back(tmp);
-            tmp = "";
+            }else{
+                cout << "NEW ONE FOUND" << endl;
+                wordsInSearchQuery.push_back(tmp);
+                tmp = "";
+            }
         }
-    }
     wordsInSearchQuery.push_back(tmp);
     tmp = "";
     cout << "There were " << wordsInSearchQuery.size() << " words inside of " << stringAnswer << endl << endl;

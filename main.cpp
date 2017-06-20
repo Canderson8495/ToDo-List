@@ -1,9 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "Database.h"
 using namespace std;
 
 
 void displayDatabase(Database tmp);
+void saveDatabase(Database save);
 
 int main()
 {
@@ -21,13 +24,75 @@ int main()
         DATABASE SAVES WILL BE DONE MOST LIKELY AFTER EACH INDIVIDUAL ENTRY CHANGE AND ON QUIT.
     **/
     if(toupper(answer)=='N'){
-
         cout << "CREATING DATABASE NOW" << endl;
-        //create database here,  but basically will create a new file.
+
         cout << "DATABASE CREATED" << endl;
     }else{
         cout << "OPENING DATABASE" << endl;
-        //load database here, the issue is that i have not figured out how to really save the entire base, so that it will efficient loading, closing, and saving it.
+        /**
+        LOADING DATABASE
+        **/
+        string stringAnswer, tmp, category;
+        int convert;
+        vector<string> entryData;
+        vector<vector<string>> Database;
+        vector<string> categoriesInUse;
+        vector<string> possibleCategories;
+        ifstream reader("Database.txt");
+        while(reader.good()){
+            reader >> stringAnswer;
+            cout << "STRING ANSWER IS " << stringAnswer << endl;
+            if(stringAnswer == "0" || stringAnswer== "1" || stringAnswer== "2" || stringAnswer== "3"){
+                entryData.push_back(stringAnswer);
+                cout << "INITATING ENTRY SEARCHER" << endl;
+                getline(reader, stringAnswer);
+                //CHECK FOR AMOUNT OF WORDS.
+                tmp = "";
+                for(int t = 0; t < stringAnswer.size(); t++){
+                    if(stringAnswer.at(t)!= '|'){
+                        if(tmp.size()== 0){
+                            tmp = stringAnswer.at(t);
+                        }else{
+                            tmp += stringAnswer.at(t);
+                        }
+                    }else{
+                        cout << "NEW ONE FOUND" << endl;
+                        entryData.push_back(tmp);
+                        tmp = "";
+                    }
+                }
+                tmp = "";
+                mainData.addEntry(entryData);
+                entryData.clear();
+                cout << endl;
+
+            }else if(stringAnswer == "USEDCATEGORIES"){
+                reader >> stringAnswer;
+                stringstream ss(stringAnswer);
+                ss >> convert;
+                vector<vector<Platform*>> tmp;
+                vector<Platform*> platforms;
+                for(int x = 0; x < convert; x++){
+                    reader >> stringAnswer;
+                    categoriesInUse.push_back(stringAnswer);
+                    tmp.push_back(platforms);
+                    cout << categoriesInUse.at(x) << endl;
+                }
+                mainData.setCategoriesInUse(categoriesInUse);
+                mainData.setDatabase(tmp);
+
+            }else if(stringAnswer == "POSSIBLECATEGORIES"){
+                reader >> stringAnswer;
+                stringstream ss(stringAnswer);
+                ss >> convert;
+                for(int x = 0; x < convert; x++){
+                    reader >> stringAnswer;
+                    possibleCategories.push_back(stringAnswer);
+                    cout << possibleCategories.at(x) << endl;
+                }
+                mainData.setPossibleCategories(possibleCategories);
+            }
+        }
         cout << "DATABASE OPENED" << endl;
     }
     /*
@@ -57,10 +122,46 @@ int main()
     cout << "Q: QUIT PROGRAM" << endl;
     cin >> answer;
     switch(toupper(answer)){
-    case 'A':
-        cout << "ADDING ENTRY" << endl;
-        mainData.addEntry();
+    case 'A':{
+        vector<string> entryData;
+        system("cls");
+        cout << "You are adding a entry" << endl;
+        cout << "What category will your entry be in?" << endl;
+        vector<string> categoriesInUse = mainData.getCategoriesInUse();
+        for(int x = 0; x < categoriesInUse.size(); x++){
+            cout << x << ": " << categoriesInUse.at(x) << endl;
+        }
+        cin >> intAnswer;
+        stringstream ss;
+        ss << intAnswer;
+        entryData.push_back(ss.str());
+        if(categoriesInUse.at(intAnswer)== "Games"){
+            cout << "You have chosen to add a new game" << endl;
+            cout << "What is the name of the game?" << endl;
+            string stringAnswer;
+            cin.ignore();
+            getline(cin , stringAnswer);
+            entryData.push_back(stringAnswer);
+            cout << "What is the console of the game?" << endl;
+            getline(cin,stringAnswer);
+            entryData.push_back(stringAnswer);
+        }else if(categoriesInUse.at(intAnswer) == "Books"){
+            cout << "You have chosen to add a new book" << endl;
+            cout << "What is the name of the book?" << endl;
+            string stringAnswer;
+            cin.ignore();
+            getline(cin , stringAnswer);
+            entryData.push_back(stringAnswer);
+            cout << "What is the total page number of the book" << endl;
+            int tmpInt;
+            cin >> tmpInt;
+            ss << tmpInt;
+            entryData.push_back(ss.str());
+        }
+        mainData.addEntry(entryData);
+        saveDatabase(mainData);
         break;
+    }
     case 'S':
         cout << "DELETING ENTRY" << endl;
         cout << "You have decided to delete an entry" << endl;
@@ -79,6 +180,7 @@ int main()
          Then we'll just simply delete from the database and possibly delete from the respective platform vector
         */
         mainData.deleteEntry(intAnswer, tmp.getDatabase());
+        saveDatabase(mainData);
         break;
     case 'D':
         cout << "SEARCHING ENTRY" << endl;
@@ -88,11 +190,13 @@ int main()
         tmp.setDatabase(mainData.searchEntry(tmpString));
         tmp.setCategoriesInUse(mainData.getCategoriesInUse());
         displayDatabase(tmp);
+        saveDatabase(mainData);
         break;
     case 'Q':
         break;
     case 'P':
         mainData.addPlatform();
+        saveDatabase(mainData);
         break;
     }
     }
@@ -128,5 +232,42 @@ void displayDatabase(Database tmp){
             }
             cout << endl;
         }
+    }
+}
+
+
+void saveDatabase(Database save){
+    ofstream writer("Database.txt");
+    if(writer.is_open()){
+        vector<vector<Platform*>> database = save.getDatabase();
+        vector<string> tmpEntryData;
+        vector<Platform*> platforms;
+        vector<string> categoriesInUse = save.getCategoriesInUse();
+        vector<string> possibleCategories = save.getPossibleCategories();
+        writer << "USEDCATEGORIES ";
+        writer << categoriesInUse.size() << " ";
+        for(int x = 0; x < categoriesInUse.size(); x++){
+            writer << categoriesInUse.at(x) << " ";
+        }
+        writer << endl;
+        writer << "POSSIBLECATEGORIES ";
+        writer << possibleCategories.size() << " ";
+        for(int x = 0; x < possibleCategories.size(); x++){
+            writer << possibleCategories.at(x) << " ";
+        }
+        writer << endl;
+        for(int x = 0; x < database.size(); x++){
+            platforms = database.at(x);
+            for(int c = 0; c < platforms.size(); c++){
+                writer << x << " ";
+                tmpEntryData = platforms.at(c)->printData();
+                for(int j = 0; j < tmpEntryData.size(); j++){
+                    writer << tmpEntryData.at(j) << " | ";
+                }
+                writer << endl;
+            }
+        }
+    }else{
+        cout << "ERROR SAVING FILE" << endl;
     }
 }

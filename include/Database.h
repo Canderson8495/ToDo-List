@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 #include "Game.h"
 #include "Book.h"
 using namespace std;
@@ -23,7 +24,9 @@ class Database
         void setDatabase(vector<vector<Platform*>> tmp);
         vector<string> getCategoriesInUse();
         void setCategoriesInUse(vector<string> tmp);
-        void addEntry();
+        vector<string> getPossibleCategories();
+        void setPossibleCategories(vector<string> tmp);
+        void addEntry(vector<string> entryData);
         void deleteEntry(int index, vector<vector<Platform*>>);
         vector<vector<Platform*>> searchEntry(string tmp);
         void addPlatform();
